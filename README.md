@@ -63,6 +63,8 @@ Expected output:
 --- PASS: TestMaxByField (0.00s)
 === RUN   TestWeeklyMaxByField
 --- PASS: TestWeeklyMaxByField (0.00s)
+=== RUN   TestPassesThreshold
+--- PASS: TestPassesThreshold (0.00s)
 === RUN   TestFilterAndGroupByWeek
 --- PASS: TestFilterAndGroupByWeek (0.00s)
 === RUN   TestAnalyze
@@ -72,5 +74,5 @@ Expected output:
 === RUN   TestHandleAnalysisShouldFail
 --- PASS: TestHandleAnalysisShouldFail (0.00s)
 PASS
-ok      command-line-arguments  1.285s
+ok      command-line-arguments  0.614s
 ```

@@ -9,7 +9,7 @@ import (
 )
 
 func TestHandleAnalysis(t *testing.T) {
-	requestBody := []byte(`[{"distance": 10000, "time": 3600, "timestamp":"` + getDate(1) + `"}]`)
+	requestBody := []byte(`[{"distance": 10000, "time": 3600, "timestamp":"` + getDate(0) + `"}]`)
 	req, err := http.NewRequest("POST", "/analyse?nweeks=1", bytes.NewBuffer(requestBody))
 	if err != nil {
 		t.Fatal(err)

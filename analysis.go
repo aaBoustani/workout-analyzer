@@ -39,6 +39,10 @@ func weeklyMaxByField(weeklyData map[int][]Workout, field string) int {
 	return max
 }
 
+func passesThreshold(thresholdYear, thresholdWeek, year, week int) bool {
+	return thresholdYear < year || (thresholdYear == year && thresholdWeek < week)
+}
+
 func filterAndGroupByWeek(workouts []Workout, nWeeks int) ([]Workout, map[int][]Workout) {
 	// Threshold to filter data that are older than n weeks.
 	thresholdYear, thresholdWeek := time.Now().AddDate(0, 0, -nWeeks*7).ISOWeek()
@@ -55,7 +59,7 @@ func filterAndGroupByWeek(workouts []Workout, nWeeks int) ([]Workout, map[int][]
 			continue
 		}
 		year, week := t.ISOWeek()
-		if thresholdYear <= year && thresholdWeek <= week {
+		if passesThreshold(thresholdYear, thresholdWeek, year, week) {
 			workoutsMap[year*100+week] = append(workoutsMap[year*100+week], w)
 			filteredWorkouts = append(filteredWorkouts, w)
 		}

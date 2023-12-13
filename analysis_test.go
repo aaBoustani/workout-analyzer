@@ -10,6 +10,14 @@ type metricsTest struct {
 	expected Workout
 }
 
+type thresholdTest struct {
+	thresholdYear int
+	thresholdWeek int
+	year          int
+	week          int
+	expected      bool
+}
+
 var defaultAnalysis = Analysis{
 	MedDistance:       0,
 	MedTime:           0,
@@ -102,12 +110,33 @@ func TestWeeklyMaxByField(t *testing.T) {
 	}
 }
 
+func TestPassesThreshold(t *testing.T) {
+	test_cases := []thresholdTest{
+		{thresholdYear: 2022, thresholdWeek: 5, year: 2023, week: 2, expected: true},
+		{thresholdYear: 2022, thresholdWeek: 5, year: 2023, week: 7, expected: true},
+		{thresholdYear: 2022, thresholdWeek: 5, year: 2022, week: 2, expected: false},
+		{thresholdYear: 2022, thresholdWeek: 5, year: 2022, week: 7, expected: true},
+		{thresholdYear: 2022, thresholdWeek: 5, year: 2022, week: 5, expected: false},
+		{thresholdYear: 2022, thresholdWeek: 5, year: 2021, week: 2, expected: false},
+		{thresholdYear: 2022, thresholdWeek: 5, year: 2021, week: 7, expected: false},
+	}
+
+	for _, test_case := range test_cases {
+		actual := passesThreshold(test_case.thresholdYear, test_case.thresholdWeek, test_case.year, test_case.week)
+		if actual != test_case.expected {
+			t.Errorf("passesThreshold(%v) returned %t workouts; expected %t", test_case, actual, test_case.expected)
+		}
+	}
+}
+
 func TestFilterAndGroupByWeek(t *testing.T) {
 	workouts := []Workout{
 		{Distance: 5000, Time: 1000, Timestamp: getDate(8)},
 		{Distance: 7000, Time: 1500, Timestamp: getDate(1)},
 		{Distance: 5000, Time: 1000, Timestamp: getDate(5)},
 		{Distance: 7000, Time: 1500, Timestamp: getDate(3)},
+		{Distance: 5000, Time: 1000, Timestamp: getDate(7)},
+		{Distance: 5000, Time: 1000, Timestamp: getDate(7)},
 		{Distance: 5000, Time: 1000, Timestamp: getDate(8)},
 		{Distance: 7000, Time: 1500, Timestamp: getDate(2)},
 		{Distance: 5000, Time: 1000, Timestamp: getDate(9)},
@@ -130,9 +159,9 @@ func TestFilterAndGroupByWeek(t *testing.T) {
 	if len(weeklyData) != numWeeks {
 		t.Errorf("filterAndGroupByWeek returned %d weeks of data; expected %d", len(weeklyData), numWeeks)
 	}
-	groupKey := getGroupKey(8)
+	groupKey := getGroupKey(7)
 	if len(weeklyData[groupKey]) != 2 {
-		t.Errorf("filterAndGroupByWeek returned %d data elements for week %d; expected %d", len(weeklyData[groupKey]), 8, 2)
+		t.Errorf("filterAndGroupByWeek returned %d data elements for week %d; expected %d", len(weeklyData[groupKey]), 7, 2)
 	}
 	for _, value := range []int{1, 3, 5} {
 		groupKey = getGroupKey(value)
@@ -149,6 +178,7 @@ func TestAnalyze(t *testing.T) {
 		{Distance: 3000, Time: 1200, Timestamp: getDate(2)},
 		{Distance: 2000, Time: 1300, Timestamp: getDate(2)},
 		{Distance: 1000, Time: 900, Timestamp: getDate(4)},
+		{Distance: 1000, Time: 900, Timestamp: getDate(1)},
 		{Distance: 5000, Time: 2000, Timestamp: getDate(3)},
 		{Distance: 7000, Time: 1500, Timestamp: getDate(3)},
 		{Distance: 5000, Time: 3000, Timestamp: getDate(2)},
